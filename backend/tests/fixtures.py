@@ -9,6 +9,7 @@ CITADEL_MD = """# Citadel Colour
 |Nuln Oil|Shade|20|20|20|`#141414`|
 |Blood Angels Red|Contrast|160|20|20|`#A01414`|
 |Old Paint|Foundation (discontinued)|150|20|20|`#961414`|
+|Rakarth Flesh|Base|158|145|129|`#9E9181`|
 """
 
 VALLEJO_MD = """# Vallejo
@@ -19,4 +20,6 @@ VALLEJO_MD = """# Vallejo
 |Magic Blue|72.021|Game Color|20|70|130|`#144682`|
 |Blood Red|72.410|Xpress Color|155|25|25|`#9B1919`|
 |Russian Green|71.281|Model Air|71|73|70|`#474946`|
+|Warm Grey|72.148|Game Color|152|141|128|`#988D80`|
+|Leather Brown|70.871|Model Color|120|70|40|`#784628`|
 """

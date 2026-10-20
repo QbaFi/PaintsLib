@@ -63,6 +63,37 @@ export interface CatalogStatus {
   inventory_count: number;
 }
 
+export type ImportMatch = "exact" | "fuzzy" | "not_found" | "unknown_brand" | "invalid";
+export type ImportAction = "added" | "updated" | "unchanged" | "skipped";
+
+export interface ImportRow {
+  line: number;
+  brand: string;
+  series: string;
+  name: string;
+  match: ImportMatch;
+  action: ImportAction;
+  paint: Paint | null;
+  suggestion: Paint | null;
+  error: string | null;
+  conversions: { name: string; match: ImportMatch; paint: Paint | null }[];
+}
+
+export interface ImportReport {
+  dry_run: boolean;
+  summary: {
+    rows: number;
+    added: number;
+    updated: number;
+    unchanged: number;
+    skipped: number;
+    fuzzy: number;
+    equivalents_added: number;
+    unknown_columns: string[];
+  };
+  rows: ImportRow[];
+}
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
@@ -121,34 +152,6 @@ export const api = {
   saveSettings: (body: { reference_brand: string }) => request<{ reference_brand: string }>("PUT", "/settings", body),
   catalogStatus: () => request<CatalogStatus>("GET", "/catalog/status"),
   startImport: () => request<{ started: boolean }>("POST", "/catalog/import"),
-};
-
-// --- Polish labels ---------------------------------------------------------------
-
-export const TYPE_LABELS: Record<PaintType, string> = {
-  base: "Base",
-  layer: "Layer",
-  shade: "Shade / wash",
-  contrast: "Contrast / speedpaint",
-  technical: "Technical / efekty",
-  metallic: "Metaliczna",
-  dry: "Dry",
-  air: "Air (aerograf)",
-  primer: "Podkład / spray",
-  other: "Inna",
-};
-
-export const STATUS_LABELS: Record<Status, string> = {
-  full: "Pełna",
-  low: "Kończy się",
-  empty: "Pusta",
-  wishlist: "Do kupienia",
-};
-
-export const QUALITY_LABELS: Record<Quality, string> = {
-  near_identical: "prawie identyczny",
-  close: "bliski",
-  similar: "podobny",
-  distant: "daleki",
-  curated: "potwierdzony",
+  importCollection: (csv: string, dryRun: boolean) =>
+    request<ImportReport>("POST", "/inventory/import", { csv, dry_run: dryRun }),
 };

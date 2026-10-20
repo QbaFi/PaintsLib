@@ -1,9 +1,11 @@
 import type { Paint } from "../api";
+import { useT } from "../i18n";
 import { useAddToInventory, useRemoveFromInventory, useUpdateInventory } from "../hooks";
 import { StatusSelect, buttonClass, ghostButtonClass } from "./ui";
 
 /** Add/remove a paint from the collection, or adjust quantity and status in place. */
 export function OwnershipControls({ paint, compact = false }: { paint: Paint; compact?: boolean }) {
+  const t = useT();
   const add = useAddToInventory();
   const update = useUpdateInventory();
   const remove = useRemoveFromInventory();
@@ -13,16 +15,16 @@ export function OwnershipControls({ paint, compact = false }: { paint: Paint; co
     return (
       <div className="flex flex-wrap gap-2">
         <button type="button" className={buttonClass} disabled={busy} onClick={() => add.mutate({ paint_id: paint.id })}>
-          + Mam
+          {t.ownership.have}
         </button>
         <button
           type="button"
           className={ghostButtonClass}
           disabled={busy}
-          title="Dodaj do listy zakupów"
+          title={t.ownership.wishlistTitle}
           onClick={() => add.mutate({ paint_id: paint.id, status: "wishlist" })}
         >
-          {compact ? "☆" : "☆ Do kupienia"}
+          {compact ? "☆" : t.ownership.wishlist}
         </button>
       </div>
     );
@@ -39,7 +41,7 @@ export function OwnershipControls({ paint, compact = false }: { paint: Paint; co
           disabled={busy}
           onClick={() => update.mutate({ id, status: "full", quantity: Math.max(qty, 1) })}
         >
-          ✓ Kupiona
+          {t.ownership.bought}
         </button>
       ) : (
         <QuantityStepper value={qty} disabled={busy} onChange={(quantity) => update.mutate({ id, quantity })} />
@@ -51,7 +53,7 @@ export function OwnershipControls({ paint, compact = false }: { paint: Paint; co
         type="button"
         className="rounded-md px-2 py-1 text-sm text-ink-400 hover:text-red-300"
         disabled={busy}
-        title="Usuń z kolekcji"
+        title={t.common.remove}
         onClick={() => remove.mutate(id)}
       >
         ✕
@@ -69,6 +71,7 @@ export function QuantityStepper({
   onChange: (v: number) => void;
   disabled?: boolean;
 }) {
+  const t = useT();
   return (
     <div className="inline-flex items-center rounded-md border border-ink-600 bg-ink-800">
       <button
@@ -76,7 +79,7 @@ export function QuantityStepper({
         className="px-2 py-1 text-ink-400 hover:text-brass-300 disabled:opacity-40"
         disabled={disabled || value <= 0}
         onClick={() => onChange(value - 1)}
-        aria-label="Mniej"
+        aria-label={t.common.less}
       >
         −
       </button>
@@ -86,7 +89,7 @@ export function QuantityStepper({
         className="px-2 py-1 text-ink-400 hover:text-brass-300 disabled:opacity-40"
         disabled={disabled}
         onClick={() => onChange(value + 1)}
-        aria-label="Więcej"
+        aria-label={t.common.more}
       >
         +
       </button>

@@ -2,11 +2,13 @@
 
 Aplikacja do prowadzenia spisu farb modelarskich (Warhammer i inne miniaturki).
 
-- **Katalog** ok. 2500 farb: Citadel, Vallejo (Game Color, Xpress Color), The Army Painter, AK Interactive, Green Stuff World
+- **Katalog** ok. 2700 farb: Citadel, Vallejo (Game Color, Xpress Color, Model Color), The Army Painter, AK Interactive, Green Stuff World
 - **Moja kolekcja**: ilość, stan (pełna / kończy się / pusta / do kupienia), tagi
 - przy każdej farbie **najbliższy odpowiednik** z wybranej marki (domyślnie Citadel) z miarą podobieństwa ΔE
 - **szukanie po kolorze** (color picker), **lista zakupów** z eksportem do CSV
 - możliwość dodania własnej farby spoza katalogu
+- **import kolekcji z arkusza** (Google Sheets / Excel → CSV) z podglądem przed zapisem; szablon do pobrania w *Ustawieniach*
+- interfejs po **polsku i angielsku** (przełącznik PL/EN w prawym górnym rogu)
 
 Całość działa w Dockerze. Na komputerze nie musisz mieć Pythona ani Node.js.
 
@@ -151,6 +153,18 @@ docker compose start
 ```
 
 Do szybkiej kopii samej kolekcji wystarczy też eksport CSV na stronie *Lista zakupów* albo adres `http://localhost:8080/api/inventory/export.csv`.
+
+### Import kolekcji z arkusza
+
+W aplikacji: *Ustawienia → Import kolekcji z arkusza (CSV)*.
+
+1. Kliknij **Pobierz szablon CSV**, otwórz go w Google Sheets lub Excelu i wpisz swoje farby. Możesz też użyć własnego arkusza z kolumnami `Brand`, `Series`, `Colour`, `Conversion` (opcjonalnie `Quantity`, `Status`; nazwy kolumn mogą być też po polsku: `Marka`, `Seria`, `Kolor`, `Odpowiednik`, `Ilość`, `Stan`).
+2. W Google Sheets: *Plik → Pobierz → Wartości rozdzielone przecinkami (.csv)*.
+3. Wybierz plik w aplikacji. Najpierw zobaczysz **podgląd**: co zostało znalezione w katalogu, co dopasowano w przybliżeniu (np. literówka), a czego brakuje. Dopiero przycisk **Importuj** zapisuje zmiany.
+
+Kolumna `Conversion` to Twoje własne odpowiedniki; kilka oddziel znakiem `/`. Zapisują się jako **potwierdzone** i mają pierwszeństwo przed automatycznym dopasowaniem po kolorze. Ponowny import tego samego pliku niczego nie dubluje.
+
+> Po aktualizacji aplikacji kliknij w *Ustawieniach* **Importuj / aktualizuj katalog**, żeby dociągnąć nowe linie farb (np. Vallejo Model Color).
 
 ### Ustawienia (opcjonalnie)
 

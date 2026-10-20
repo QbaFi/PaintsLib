@@ -4,16 +4,17 @@ import { api } from "../api";
 import { useOpenPaint } from "../components/PaintDrawer";
 import { Empty, ErrorBox, MatchRow, PageHeader, Swatch, inputClass, useDebounced } from "../components/ui";
 import { useBrands } from "../hooks";
-
-const GROUPS = [
-  { value: "", label: "Każdy rodzaj farby" },
-  { value: "opaque", label: "Kryjące (base, layer…)" },
-  { value: "contrast", label: "Contrast / speedpaint" },
-  { value: "shade", label: "Shade / wash" },
-  { value: "technical", label: "Technical / efekty" },
-];
+import { useT } from "../i18n";
 
 export function ColorSearchPage() {
+  const t = useT();
+  const GROUPS = [
+    { value: "", label: t.color.groupAny },
+    { value: "opaque", label: t.color.groupOpaque },
+    { value: "contrast", label: t.color.groupContrast },
+    { value: "shade", label: t.color.groupShade },
+    { value: "technical", label: t.color.groupTechnical },
+  ];
   const [hex, setHex] = useState("#9A1115");
   const [text, setText] = useState("#9A1115");
   const [group, setGroup] = useState("");
@@ -37,10 +38,10 @@ export function ColorSearchPage() {
 
   return (
     <>
-      <PageHeader title="Szukaj po kolorze" subtitle="Wybierz kolor, a pokażę najbliższe farby" />
+      <PageHeader title={t.color.title} subtitle={t.color.subtitle} />
 
       <div className="mb-8 flex flex-wrap items-center gap-4 rounded-xl border border-ink-700 bg-ink-900 p-4">
-        <label className="relative cursor-pointer" title="Wybierz kolor">
+        <label className="relative cursor-pointer" title={t.color.pick}>
           <Swatch hex={hex} size={72} />
           <input
             type="color"
@@ -56,7 +57,7 @@ export function ColorSearchPage() {
           className={`${inputClass} w-32 font-mono`}
           value={text}
           onChange={(e) => onText(e.target.value)}
-          aria-label="Kod hex"
+          aria-label={t.color.hex}
         />
         <select className={inputClass} value={group} onChange={(e) => setGroup(e.target.value)}>
           {GROUPS.map((g) => (
@@ -66,21 +67,21 @@ export function ColorSearchPage() {
           ))}
         </select>
         <select className={inputClass} value={brand} onChange={(e) => setBrand(e.target.value)}>
-          <option value="">Najlepsza z każdej marki</option>
+          <option value="">{t.color.bestPerBrand}</option>
           {brands.map((b) => (
             <option key={b.slug} value={b.slug}>
-              Tylko {b.name}
+              {t.color.onlyBrand(b.name)}
             </option>
           ))}
         </select>
         <label className="flex items-center gap-2 text-sm text-ink-400">
           <input type="checkbox" checked={ownedFirst} onChange={(e) => setOwnedFirst(e.target.checked)} />
-          najpierw moje farby
+          {t.color.ownedFirst}
         </label>
       </div>
 
       {results.isError && <ErrorBox error={results.error} />}
-      {results.data?.length === 0 && <Empty>Brak farb pasujących do filtrów.</Empty>}
+      {results.data?.length === 0 && <Empty>{t.color.noResults}</Empty>}
       <div className="max-w-2xl space-y-4">
         {results.data?.map((m) => <MatchRow key={m.paint.id} match={m} onOpen={openPaint} />)}
       </div>

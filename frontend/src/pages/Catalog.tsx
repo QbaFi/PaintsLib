@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
-import { api, TYPE_LABELS, type PaintType } from "../api";
+import { api, type PaintType } from "../api";
+import { useT } from "../i18n";
 import { OwnershipControls } from "../components/Ownership";
 import { useOpenPaint } from "../components/PaintDrawer";
 import { Empty, ErrorBox, PageHeader, PaintLabel, Swatch, ghostButtonClass, inputClass, useDebounced } from "../components/ui";
@@ -9,6 +10,7 @@ import { useBrands } from "../hooks";
 const PAGE_SIZE = 48;
 
 export function CatalogPage() {
+  const t = useT();
   const [q, setQ] = useState("");
   const [brand, setBrand] = useState("");
   const [type, setType] = useState("");
@@ -44,37 +46,37 @@ export function CatalogPage() {
   return (
     <>
       <PageHeader
-        title="Katalog farb"
-        subtitle={paints.data ? `${paints.data.total} wyników` : "Wyszukaj farbę po nazwie, marce lub linii"}
+        title={t.catalog.title}
+        subtitle={paints.data ? t.catalog.results(paints.data.total) : t.catalog.hint}
       />
 
       <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <input
           autoFocus
           className={`${inputClass} col-span-2`}
-          placeholder="np. Mephiston, Leadbelcher, 72.010…"
+          placeholder={t.catalog.placeholder}
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
         <select className={inputClass} value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="">Każdy typ</option>
-          {(Object.keys(TYPE_LABELS) as PaintType[]).map((t) => (
-            <option key={t} value={t}>
-              {TYPE_LABELS[t]}
+          <option value="">{t.common.anyType}</option>
+          {(Object.keys(t.types) as PaintType[]).map((pt) => (
+            <option key={pt} value={pt}>
+              {t.types[pt]}
             </option>
           ))}
         </select>
         <select className={inputClass} value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="relevance">Sortuj: trafność</option>
-          <option value="name">Sortuj: nazwa</option>
-          <option value="hue">Sortuj: kolor</option>
-          <option value="brand">Sortuj: marka</option>
+          <option value="relevance">{t.catalog.sortRelevance}</option>
+          <option value="name">{t.collection.sortName}</option>
+          <option value="hue">{t.collection.sortHue}</option>
+          <option value="brand">{t.collection.sortBrand}</option>
         </select>
       </div>
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <Chip active={brand === ""} onClick={() => setBrand("")}>
-          Wszystkie
+          {t.catalog.all}
         </Chip>
         {brands.data?.map((b) => (
           <Chip key={b.slug} active={brand === b.slug} onClick={() => setBrand(b.slug)}>
@@ -83,24 +85,21 @@ export function CatalogPage() {
         ))}
         <span className="mx-1 h-5 w-px bg-ink-700" />
         <select className={`${inputClass} py-1`} value={owned} onChange={(e) => setOwned(e.target.value)}>
-          <option value="">Posiadane i nie</option>
-          <option value="true">Tylko moje</option>
-          <option value="false">Których nie mam</option>
+          <option value="">{t.catalog.ownedAny}</option>
+          <option value="true">{t.catalog.ownedOnly}</option>
+          <option value="false">{t.catalog.ownedNot}</option>
         </select>
         <label className="flex items-center gap-2 text-sm text-ink-400">
           <input type="checkbox" checked={discontinued} onChange={(e) => setDiscontinued(e.target.checked)} />
-          pokaż wycofane
+          {t.catalog.showDiscontinued}
         </label>
       </div>
 
       {catalogEmpty && (
-        <Empty>
-          Katalog jest pusty — import farb trwa zwykle kilkanaście sekund po pierwszym uruchomieniu. Odśwież stronę za
-          chwilę albo sprawdź zakładkę Ustawienia.
-        </Empty>
+        <Empty>{t.catalog.empty}</Empty>
       )}
       {paints.isError && <ErrorBox error={paints.error} />}
-      {paints.data?.items.length === 0 && !catalogEmpty && <Empty>Nic nie znaleziono. Spróbuj krótszej nazwy.</Empty>}
+      {paints.data?.items.length === 0 && !catalogEmpty && <Empty>{t.catalog.noResults}</Empty>}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {paints.data?.items.map((p) => (
@@ -110,12 +109,12 @@ export function CatalogPage() {
               p.owned ? "border-brass-600/60" : "border-ink-700"
             }`}
           >
-            <button type="button" onClick={() => openPaint(p)} aria-label={`Szczegóły: ${p.name}`}>
+            <button type="button" onClick={() => openPaint(p)} aria-label={t.catalog.details(p.name)}>
               <Swatch hex={p.hex} size={48} />
             </button>
             <div className="min-w-0 flex-1">
               <PaintLabel paint={p} onClick={() => openPaint(p)} />
-              <span className="text-[11px] text-ink-400">{TYPE_LABELS[p.type]}</span>
+              <span className="text-[11px] text-ink-400">{t.types[p.type]}</span>
             </div>
             <OwnershipControls paint={p} compact />
           </div>
@@ -125,13 +124,13 @@ export function CatalogPage() {
       {pages > 1 && (
         <div className="mt-6 flex items-center justify-center gap-3">
           <button type="button" className={ghostButtonClass} disabled={page <= 1} onClick={() => setPage(page - 1)}>
-            ← Poprzednia
+            {t.catalog.prev}
           </button>
           <span className="text-sm text-ink-400">
             {page} / {pages}
           </span>
           <button type="button" className={ghostButtonClass} disabled={page >= pages} onClick={() => setPage(page + 1)}>
-            Następna →
+            {t.catalog.next}
           </button>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { api, STATUS_LABELS } from "../api";
+import { api } from "../api";
+import { useT } from "../i18n";
 import { OwnershipControls } from "../components/Ownership";
 import { useOpenPaint } from "../components/PaintDrawer";
 import { Empty, ErrorBox, PageHeader, PaintLabel, Swatch, ghostButtonClass } from "../components/ui";
@@ -8,6 +9,7 @@ import { Empty, ErrorBox, PageHeader, PaintLabel, Swatch, ghostButtonClass } fro
 const SHOPPING_STATUSES = "wishlist,empty,low";
 
 export function ShoppingPage() {
+  const t = useT();
   const openPaint = useOpenPaint();
   const [copied, setCopied] = useState(false);
   const items = useQuery({
@@ -26,14 +28,14 @@ export function ShoppingPage() {
 
   return (
     <>
-      <PageHeader title="Lista zakupów" subtitle="Farby oznaczone jako „do kupienia”, puste lub kończące się">
+      <PageHeader title={t.shopping.title} subtitle={t.shopping.subtitle}>
         {!!items.data?.length && (
           <div className="flex gap-2">
             <button type="button" className={ghostButtonClass} onClick={copy}>
-              {copied ? "Skopiowano ✓" : "Kopiuj jako tekst"}
+              {copied ? t.shopping.copied : t.shopping.copy}
             </button>
             <a className={ghostButtonClass} href={`/api/inventory/export.csv?status=${SHOPPING_STATUSES}`}>
-              Pobierz CSV
+              {t.shopping.csv}
             </a>
           </div>
         )}
@@ -41,7 +43,7 @@ export function ShoppingPage() {
 
       {items.isError && <ErrorBox error={items.error} />}
       {items.data?.length === 0 && (
-        <Empty>Lista jest pusta. W katalogu kliknij „☆”, żeby dodać farbę do kupienia.</Empty>
+        <Empty>{t.shopping.empty}</Empty>
       )}
       <ul className="space-y-2">
         {items.data?.map((item) => (
@@ -49,7 +51,7 @@ export function ShoppingPage() {
             <Swatch hex={item.paint.hex} />
             <div className="min-w-0 flex-1">
               <PaintLabel paint={item.paint} onClick={() => openPaint(item.paint)} />
-              <span className="text-[11px] text-ink-400">{STATUS_LABELS[item.status]}</span>
+              <span className="text-[11px] text-ink-400">{t.statuses[item.status]}</span>
             </div>
             <OwnershipControls paint={item.paint} />
           </li>

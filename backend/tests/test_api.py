@@ -10,8 +10,8 @@ def test_health(client):
 def test_import_respects_brand_and_range_filters(client):
     brands = {b["slug"]: b["paint_count"] for b in client.get("/api/brands").json()}
     assert set(brands) == {"citadel", "vallejo"}  # "Unknown" is not in catalog.py
-    assert brands["citadel"] == 6
-    assert brands["vallejo"] == 4  # Model Air is skipped
+    assert brands["citadel"] == 7
+    assert brands["vallejo"] == 6  # Model Air is skipped
 
 
 def test_import_is_idempotent(client):
@@ -21,7 +21,7 @@ def test_import_is_idempotent(client):
 
     with SessionLocal() as session:
         result = import_catalog(session, {"Citadel_Colour": CITADEL_MD})
-    assert result.created == 0 and result.updated == 6
+    assert result.created == 0 and result.updated == 7
 
 
 def test_search_hides_discontinued_by_default(client):
@@ -114,3 +114,44 @@ def test_curated_equivalent_takes_priority(client):
     matches = client.get(f"/api/paints/{black['id']}/equivalents", params={"brand": "vallejo"}).json()
     assert matches[0]["quality"] == "curated" and matches[0]["paint"]["name"] == "Magic Blue"
     client.delete(f"/api/paints/{black['id']}/equivalents/{magic_blue['id']}")
+
+
+IMPORT_CSV = """Brand;Series;Colour;Conversion;Ilość;Stan
+Vallejo;Game Color;Warm Gray;Rakath Flesh;;
+Vallejo;Model Color;Leather Brown;Mephiston Red / Macragge Blue;2;low
+Citadel;Base;Abaddon Black ;;;
+Foo Paints;Base;Something;;;
+Vallejo;Game Color;Bloody Redd;;;do kupienia
+Citadel;Base;Totally Unknown Colour;;;
+"""
+
+
+def test_import_template(client):
+    text = client.get("/api/inventory/template.csv").text
+    assert text.startswith("Brand,Series,Colour,Conversion,Quantity,Status")
+
+
+def test_collection_import_preview_then_save(client):
+    preview = client.post("/api/inventory/import", json={"csv": IMPORT_CSV, "dry_run": True}).json()
+    rows = {r["name"].strip(): r for r in preview["rows"]}
+    assert rows["Warm Gray"]["match"] == "exact" and rows["Warm Gray"]["paint"]["name"] == "Warm Grey"
+    assert rows["Warm Gray"]["conversions"][0]["match"] == "fuzzy"
+    assert rows["Warm Gray"]["conversions"][0]["paint"]["name"] == "Rakarth Flesh"
+    assert rows["Leather Brown"]["paint"]["range_name"] == "Model Color"
+    assert [c["paint"]["name"] for c in rows["Leather Brown"]["conversions"]] == ["Mephiston Red", "Macragge Blue"]
+    assert rows["Something"]["match"] == "unknown_brand"
+    assert rows["Bloody Redd"]["match"] == "fuzzy" and rows["Bloody Redd"]["paint"]["name"] == "Bloody Red"
+    assert rows["Totally Unknown Colour"]["match"] == "not_found"
+    assert preview["summary"]["added"] == 4 and preview["summary"]["skipped"] == 2
+    assert client.get("/api/inventory").json() == []  # dry run saved nothing
+
+    saved = client.post("/api/inventory/import", json={"csv": IMPORT_CSV, "dry_run": False}).json()
+    assert saved["summary"]["added"] == 4 and saved["summary"]["equivalents_added"] == 3
+    items = {i["paint"]["name"]: i for i in client.get("/api/inventory").json()}
+    assert items["Leather Brown"]["quantity"] == 2 and items["Leather Brown"]["status"] == "low"
+    assert items["Bloody Red"]["status"] == "wishlist" and items["Bloody Red"]["quantity"] == 0
+    assert items["Leather Brown"]["reference_match"]["quality"] == "curated"
+
+    again = client.post("/api/inventory/import", json={"csv": IMPORT_CSV, "dry_run": False}).json()
+    assert again["summary"]["added"] == 0 and again["summary"]["unchanged"] == 4
+    assert again["summary"]["equivalents_added"] == 0

@@ -13,7 +13,7 @@ from app.config import settings
 from app.db import SessionLocal
 from app.importer import start_background_import
 from app.models import Paint
-from app.routers import inventory, paints
+from app.routers import collection, inventory, paints
 from app.routers import settings as settings_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -33,6 +33,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(title="PaintsLib", version="0.1.0", lifespan=lifespan)
 app.include_router(paints.router)
+app.include_router(collection.router)
 app.include_router(inventory.router)
 app.include_router(settings_router.router)
 

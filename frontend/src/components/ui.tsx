@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { QUALITY_LABELS, STATUS_LABELS, type Match, type Paint, type Status } from "../api";
+import type { Match, Paint, Status } from "../api";
+import { useT } from "../i18n";
 
 /** A paint "pot" colour sample. Light colours get a darker outline so they stay visible. */
 export function Swatch({ hex, size = 40, className = "" }: { hex: string; size?: number; className?: string }) {
@@ -13,6 +14,7 @@ export function Swatch({ hex, size = 40, className = "" }: { hex: string; size?:
 }
 
 export function PaintLabel({ paint, onClick }: { paint: Paint; onClick?: () => void }) {
+  const t = useT();
   const inner = (
     <>
       <span className="block truncate font-medium text-ink-200">{paint.name}</span>
@@ -20,7 +22,7 @@ export function PaintLabel({ paint, onClick }: { paint: Paint; onClick?: () => v
         {paint.brand.name}
         {paint.range_name ? ` · ${paint.range_name}` : ""}
         {paint.code ? ` · ${paint.code}` : ""}
-        {paint.discontinued ? " · wycofana" : ""}
+        {paint.discontinued ? ` · ${t.common.discontinued}` : ""}
       </span>
     </>
   );
@@ -43,28 +45,32 @@ const QUALITY_STYLES: Record<Match["quality"], string> = {
 
 /** ΔE badge. The "~" reminds that catalog colours are approximations. */
 export function QualityBadge({ match }: { match: Match }) {
+  const t = useT();
   const title =
-    match.quality === "curated"
-      ? "Odpowiednik potwierdzony ręcznie"
-      : `ΔE₀₀ = ${match.delta_e} (${QUALITY_LABELS[match.quality]}). Kolory w katalogu są przybliżone.`;
+    match.quality === "curated" ? t.badge.curatedTitle : t.badge.deltaTitle(match.delta_e, t.quality[match.quality]);
   return (
     <span
       title={title}
       className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${QUALITY_STYLES[match.quality]}`}
     >
-      {match.quality === "curated" ? "✓ potwierdzony" : `~ΔE ${match.delta_e?.toFixed(1)}`}
+      {match.quality === "curated" ? t.badge.curated : `~ΔE ${match.delta_e?.toFixed(1)}`}
     </span>
   );
 }
 
 export function MatchRow({ match, onOpen }: { match: Match; onOpen?: (p: Paint) => void }) {
+  const t = useT();
   return (
     <div className="flex items-center gap-3">
       <Swatch hex={match.paint.hex} size={28} />
       <div className="min-w-0 flex-1">
         <PaintLabel paint={match.paint} onClick={onOpen ? () => onOpen(match.paint) : undefined} />
       </div>
-      {match.paint.owned && <span className="text-[11px] text-brass-300" title="Masz tę farbę">● mam</span>}
+      {match.paint.owned && (
+        <span className="text-[11px] text-brass-300" title={t.common.ownedTitle}>
+          {t.common.owned}
+        </span>
+      )}
       <QualityBadge match={match} />
     </div>
   );
@@ -78,15 +84,16 @@ const STATUS_STYLES: Record<Status, string> = {
 };
 
 export function StatusSelect({ value, onChange }: { value: Status; onChange: (s: Status) => void }) {
+  const t = useT();
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as Status)}
       className={`rounded-md border border-ink-600 bg-ink-800 px-2 py-1 text-sm ${STATUS_STYLES[value]}`}
     >
-      {(Object.keys(STATUS_LABELS) as Status[]).map((s) => (
+      {(Object.keys(t.statuses) as Status[]).map((s) => (
         <option key={s} value={s}>
-          {STATUS_LABELS[s]}
+          {t.statuses[s]}
         </option>
       ))}
     </select>
@@ -117,9 +124,10 @@ export function Empty({ children }: { children: ReactNode }) {
 }
 
 export function ErrorBox({ error }: { error: unknown }) {
+  const t = useT();
   return (
     <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
-      Coś poszło nie tak: {error instanceof Error ? error.message : String(error)}
+      {t.common.error} {error instanceof Error ? error.message : String(error)}
     </div>
   );
 }

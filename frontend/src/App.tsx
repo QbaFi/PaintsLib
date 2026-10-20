@@ -1,20 +1,21 @@
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { PaintDrawerProvider } from "./components/PaintDrawer";
+import { LanguageSwitch, useT } from "./i18n";
 import { CatalogPage } from "./pages/Catalog";
 import { CollectionPage } from "./pages/Collection";
 import { ColorSearchPage } from "./pages/ColorSearch";
 import { SettingsPage } from "./pages/Settings";
 import { ShoppingPage } from "./pages/Shopping";
 
-const NAV = [
-  { to: "/", label: "Kolekcja", end: true },
-  { to: "/catalog", label: "Katalog" },
-  { to: "/color", label: "Po kolorze" },
-  { to: "/shopping", label: "Zakupy" },
-  { to: "/settings", label: "Ustawienia" },
-];
-
 export function App() {
+  const t = useT();
+  const NAV = [
+    { to: "/", label: t.nav.collection, end: true },
+    { to: "/catalog", label: t.nav.catalog },
+    { to: "/color", label: t.nav.color },
+    { to: "/shopping", label: t.nav.shopping },
+    { to: "/settings", label: t.nav.settings },
+  ];
   return (
     <PaintDrawerProvider>
       <header className="sticky top-0 z-30 border-b border-ink-700 bg-ink-950/90 backdrop-blur">
@@ -39,6 +40,9 @@ export function App() {
               </NavLink>
             ))}
           </nav>
+          <div className="ml-auto">
+            <LanguageSwitch />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8">

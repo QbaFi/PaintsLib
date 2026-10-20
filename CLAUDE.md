@@ -109,14 +109,14 @@ OpenAPI generowane automatycznie przez FastAPI (`/docs`).
 - Lint/format: ruff + black (Python), eslint + prettier (TS).
 - Bez `Makefile` (Windows go nie ma) — wszystkie komendy to zwykłe `docker compose …`, opisane w README.
 - Brak sekretów w repo; `.env.example` z domyślnymi wartościami.
-- Aplikacja w interfejsie po polsku (z możliwością dodania i18n później); nazwy farb zawsze w oryginale.
+- Interfejs dwujęzyczny PL/EN (`frontend/src/i18n.tsx`, każdy nowy tekst dodawać w obu językach); nazwy farb zawsze w oryginale.
 
 ## 9. Otwarte decyzje (do ustalenia z właścicielem)
 
 - [x] Stos: jeden kontener (FastAPI + React) + SQLite — patrz §4.
 - [x] Hostowanie: lokalnie na Windows i macOS przez Docker Desktop.
 - [X] Na razie dostęp tylko lokalnie 
-- [x] Docelowe marki w MVP: Citadel/Warhammer Vallejo Game Color, Callejo XpressColor, Army Painter, AK, Green Stuff World
+- [x] Docelowe marki w MVP: Citadel/Warhammer, Vallejo Game Color, Vallejo Xpress Color, Vallejo Model Color, Army Painter, AK, Green Stuff World
 - [x] Dowolnie wybraną markę, z możliwością wyboru w ustawieniach
 
 ## 10. Istniejące projekty do podejrzenia (nie kopiować kodu bez sprawdzenia licencji)
@@ -129,5 +129,6 @@ OpenAPI generowane automatycznie przez FastAPI (`/docs`).
 
 - Uruchomienie, backup i struktura katalogów: patrz `README.md`.
 - Backend: `backend/app` (routery w `routers/`, kolorymetria w `color.py`, dopasowania w `matching.py`, import w `importer.py`, wybór marek i rozpoznawanie typu farby w `catalog.py`). Zmiana schematu bazy = nowa migracja Alembic w `backend/alembic/versions/`.
-- Frontend: `frontend/src` (strony w `pages/`, klient API w `api.ts`, polskie etykiety w `api.ts`).
+- Frontend: `frontend/src` (strony w `pages/`, klient API w `api.ts`, tłumaczenia w `i18n.tsx`).
+- Import kolekcji z CSV: logika dopasowania w `backend/app/collection_import.py` (czysty Python, testowalny), endpointy w `routers/collection.py` (`GET /api/inventory/template.csv`, `POST /api/inventory/import` z `dry_run`), UI w `frontend/src/components/CsvImport.tsx`. Kolumna `Conversion` → `paint_equivalent` (potwierdzone odpowiedniki).
 - CI (`.github/workflows/ci.yml`): ruff + pytest, import prawdziwego katalogu, typecheck i build frontendu, build obrazu i test uruchomienia przez `docker compose`. Każda zmiana powinna przechodzić CI.

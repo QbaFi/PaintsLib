@@ -25,7 +25,7 @@ BRANDS: dict[str, BrandConfig] = {
     "Vallejo": BrandConfig(
         "vallejo",
         "Vallejo",
-        include_range=lambda r: r.lower().startswith(("game color", "xpress color")),
+        include_range=lambda r: r.lower().startswith(("game color", "xpress color", "model color")),
     ),
     "Army_Painter": BrandConfig("army-painter", "The Army Painter"),
     "AK": BrandConfig("ak", "AK Interactive"),

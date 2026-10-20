@@ -124,3 +124,10 @@ OpenAPI generowane automatycznie przez FastAPI (`/docs`).
 - **Lucifix/model-workshop-manager** — self-hosted w Dockerze, katalog modeli/farb/akcesoriów, import 10k+ farb z `miniature-paints`, PWA.
 - **ArturSkowronski/minipainter** — lokalny rejestr farb z REST API, matchingiem kolorów i serwerem MCP.
 - **Miniature Painter Pro**, **Penzel** — aplikacje mobilne z konwersją między markami (inspiracja UX).
+
+## 11. Stan projektu (MVP zbudowane)
+
+- Uruchomienie, backup i struktura katalogów: patrz `README.md`.
+- Backend: `backend/app` (routery w `routers/`, kolorymetria w `color.py`, dopasowania w `matching.py`, import w `importer.py`, wybór marek i rozpoznawanie typu farby w `catalog.py`). Zmiana schematu bazy = nowa migracja Alembic w `backend/alembic/versions/`.
+- Frontend: `frontend/src` (strony w `pages/`, klient API w `api.ts`, polskie etykiety w `api.ts`).
+- CI (`.github/workflows/ci.yml`): ruff + pytest, import prawdziwego katalogu, typecheck i build frontendu, build obrazu i test uruchomienia przez `docker compose`. Każda zmiana powinna przechodzić CI.

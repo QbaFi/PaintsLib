@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Tests
+        run: pytest -q
+      - name: Import the real catalog into a throwaway database
+        env:
+          DATABASE_URL: sqlite:////tmp/ci.db
+        run: |
+          alembic upgrade head
+          python -m app.importer
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - name: Type check
+        run: npm run typecheck
+      - name: Build
+        run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker compose build
+      - name: Start the app and wait until it is healthy
+        run: |
+          docker compose up -d
+          for i in $(seq 1 30); do
+            curl -fsS http://localhost:8080/api/health && break
+            sleep 2
+          done
+          curl -fsS http://localhost:8080/ | grep -q PaintsLib
+          # wait for the automatic catalog import
+          for i in $(seq 1 60); do
+            count=$(curl -fsS http://localhost:8080/api/catalog/status | python3 -c "import sys,json; print(json.load(sys.stdin)['paint_count'])")
+            [ "$count" -gt 1000 ] && echo "Catalog has $count paints" && break
+            sleep 2
+          done
+          [ "$count" -gt 1000 ]
+      - name: Logs
+        if: always()
+        run: docker compose logs

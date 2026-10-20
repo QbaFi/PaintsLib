@@ -115,9 +115,9 @@ OpenAPI generowane automatycznie przez FastAPI (`/docs`).
 
 - [x] Stos: jeden kontener (FastAPI + React) + SQLite — patrz §4.
 - [x] Hostowanie: lokalnie na Windows i macOS przez Docker Desktop.
-- [ ] Czy potrzebne logowanie (dostęp z internetu) czy tylko sieć lokalna?
-- [ ] Docelowe marki w MVP (sugestia: Citadel, Vallejo Game/Model Color, Army Painter, AK 3rd Gen, Two Thin Coats).
-- [ ] Czy pokazywać odpowiedniki tylko Citadel, czy dowolnie wybraną „markę referencyjną” w ustawieniach?
+- [X] Na razie dostęp tylko lokalnie 
+- [x] Docelowe marki w MVP: Citadel/Warhammer Vallejo Game Color, Callejo XpressColor, Army Painter, AK, Green Stuff World
+- [x] Dowolnie wybraną markę, z możliwością wyboru w ustawieniach
 
 ## 10. Istniejące projekty do podejrzenia (nie kopiować kodu bez sprawdzenia licencji)
 

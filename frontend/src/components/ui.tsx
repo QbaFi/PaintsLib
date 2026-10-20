@@ -27,7 +27,11 @@ export function PaintLabel({ paint, onClick }: { paint: Paint; onClick?: () => v
     </>
   );
   return onClick ? (
-    <button type="button" onClick={onClick} className="min-w-0 text-left hover:[&>span:first-child]:text-brass-300">
+    <button
+      type="button"
+      onClick={onClick}
+      className="block w-full min-w-0 text-left hover:[&>span:first-child]:text-brass-300"
+    >
       {inner}
     </button>
   ) : (

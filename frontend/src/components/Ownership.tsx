@@ -13,15 +13,23 @@ export function OwnershipControls({ paint, compact = false }: { paint: Paint; co
 
   if (paint.inventory_id === null) {
     return (
-      <div className="flex flex-wrap gap-2">
-        <button type="button" className={buttonClass} disabled={busy} onClick={() => add.mutate({ paint_id: paint.id })}>
-          {t.ownership.have}
+      <div className="flex shrink-0 gap-2">
+        <button
+          type="button"
+          className={compact ? `${buttonClass} w-9 px-0 text-base` : buttonClass}
+          disabled={busy}
+          title={t.ownership.haveTitle}
+          aria-label={t.ownership.haveTitle}
+          onClick={() => add.mutate({ paint_id: paint.id })}
+        >
+          {compact ? "+" : t.ownership.have}
         </button>
         <button
           type="button"
-          className={ghostButtonClass}
+          className={compact ? `${ghostButtonClass} w-9 px-0` : ghostButtonClass}
           disabled={busy}
           title={t.ownership.wishlistTitle}
+          aria-label={t.ownership.wishlistTitle}
           onClick={() => add.mutate({ paint_id: paint.id, status: "wishlist" })}
         >
           {compact ? "☆" : t.ownership.wishlist}
@@ -33,15 +41,17 @@ export function OwnershipControls({ paint, compact = false }: { paint: Paint; co
   const id = paint.inventory_id;
   const qty = paint.inventory_quantity ?? 0;
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={`flex items-center gap-2 ${compact ? "shrink-0" : "flex-wrap"}`}>
       {paint.inventory_status === "wishlist" ? (
         <button
           type="button"
-          className={buttonClass}
+          className={compact ? `${buttonClass} w-9 px-0` : buttonClass}
           disabled={busy}
+          title={t.ownership.bought}
+          aria-label={t.ownership.bought}
           onClick={() => update.mutate({ id, status: "full", quantity: Math.max(qty, 1) })}
         >
-          {t.ownership.bought}
+          {compact ? "✓" : t.ownership.bought}
         </button>
       ) : (
         <QuantityStepper value={qty} disabled={busy} onChange={(quantity) => update.mutate({ id, quantity })} />

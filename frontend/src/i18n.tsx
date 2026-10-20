@@ -50,7 +50,13 @@ const pl = {
     deltaTitle: (delta: number | null, quality: string) =>
       `ΔE₀₀ = ${delta} (${quality}). Kolory w katalogu są przybliżone.`,
   },
-  ownership: { have: "+ Mam", wishlist: "☆ Do kupienia", wishlistTitle: "Dodaj do listy zakupów", bought: "✓ Kupiona" },
+  ownership: {
+    have: "+ Mam",
+    haveTitle: "Mam tę farbę — dodaj do kolekcji",
+    wishlist: "☆ Do kupienia",
+    wishlistTitle: "Dodaj do listy zakupów",
+    bought: "✓ Kupiona",
+  },
   collection: {
     title: "Moja kolekcja",
     subtitle: (n: number, ref: string) => `${n} farb · odpowiedniki: ${ref}`,
@@ -68,7 +74,7 @@ const pl = {
     alreadyRef: (ref: string) => `— to już ${ref}`,
     emptyBefore: "Nic tu jeszcze nie ma. Znajdź swoje farby w",
     emptyLink: "katalogu",
-    emptyAfter: "i kliknij „+ Mam” albo zaimportuj arkusz w Ustawieniach.",
+    emptyAfter: "i kliknij „+” przy farbie albo zaimportuj arkusz w Ustawieniach.",
   },
   catalog: {
     title: "Katalog farb",
@@ -220,7 +226,13 @@ const en: Dict = {
     curatedTitle: "Equivalent confirmed by hand",
     deltaTitle: (delta, quality) => `ΔE₀₀ = ${delta} (${quality}). Catalog colours are approximate.`,
   },
-  ownership: { have: "+ I have it", wishlist: "☆ To buy", wishlistTitle: "Add to shopping list", bought: "✓ Bought" },
+  ownership: {
+    have: "+ I have it",
+    haveTitle: "I have this paint — add to collection",
+    wishlist: "☆ To buy",
+    wishlistTitle: "Add to shopping list",
+    bought: "✓ Bought",
+  },
   collection: {
     title: "My collection",
     subtitle: (n, ref) => `${n} paints · equivalents: ${ref}`,
@@ -238,7 +250,7 @@ const en: Dict = {
     alreadyRef: (ref) => `— already ${ref}`,
     emptyBefore: "Nothing here yet. Find your paints in the",
     emptyLink: "catalog",
-    emptyAfter: "and click “+ I have it”, or import a spreadsheet in Settings.",
+    emptyAfter: "and click “+” next to a paint, or import a spreadsheet in Settings.",
   },
   catalog: {
     title: "Paint catalog",

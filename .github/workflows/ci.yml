@@ -19,7 +19,16 @@ jobs:
       - name: Lint
         run: ruff check --output-format=github .
       - name: Tests
-        run: pytest -q
+        run: |
+          set +e
+          pytest -q --tb=short -p no:cacheprovider > pytest.log 2>&1
+          code=$?
+          cat pytest.log
+          if [ $code -ne 0 ]; then
+            # Surface the failure output as an annotation (visible in the run summary).
+            python -c "import sys; t=open('pytest.log').read()[-6000:]; print('::error title=pytest::' + t.replace('%','%25').replace('\r','').replace('\n','%0A'))"
+          fi
+          exit $code
       - name: Import the real catalog into a throwaway database
         env:
           DATABASE_URL: sqlite:////tmp/ci.db

@@ -1,142 +1,143 @@
 # PaintsLib
 
-Aplikacja do prowadzenia spisu farb modelarskich (Warhammer i inne miniaturki).
+A self-hosted app for keeping track of your miniature paints (Warhammer and other miniatures).
 
-- **Katalog** ok. 2700 farb: Citadel, Vallejo (Game Color, Xpress Color, Model Color), The Army Painter, AK Interactive, Green Stuff World
-- **Moja kolekcja**: ilość, stan (pełna / kończy się / pusta / do kupienia), tagi
-- przy każdej farbie **najbliższy odpowiednik** z wybranej marki (domyślnie Citadel) z miarą podobieństwa ΔE
-- **szukanie po kolorze** (color picker), **lista zakupów** z eksportem do CSV
-- możliwość dodania własnej farby spoza katalogu
-- **import kolekcji z arkusza** (Google Sheets / Excel → CSV) z podglądem przed zapisem; szablon do pobrania w *Ustawieniach*
-- interfejs po **polsku i angielsku** (przełącznik PL/EN w prawym górnym rogu)
+- **Catalog** of ~2,700 paints: Citadel, Vallejo (Game Color, Xpress Color, Model Color), The Army Painter, AK Interactive, Green Stuff World
+- **My collection**: quantity, status (full / running low / empty / to buy), tags
+- the **closest equivalent** of every paint from a brand of your choice (Citadel by default), with a ΔE similarity score
+- **search by colour** (colour picker), **shopping list** with CSV export
+- add your own paints that aren't in the catalog
+- **import your collection from a spreadsheet** (Google Sheets / Excel → CSV) with a preview before anything is saved; a template is available in *Settings*
+- interface in **English and Polish** (EN/PL switch in the top-right corner)
 
-Całość działa w Dockerze. Na komputerze nie musisz mieć Pythona ani Node.js.
+Everything runs in Docker. You don't need Python or Node.js on your computer.
 
-**Wybierz jeden z dwóch sposobów:**
+**Pick one of two ways to run Docker:**
 
-| | Opcja A: Docker Desktop | Opcja B: tylko terminal |
+| | Option A: Docker Desktop | Option B: terminal only |
 |---|---|---|
-| Dla kogo | wolisz klikać, chcesz widzieć kontenery w okienku | nie boisz się wpisać kilku komend |
-| Instalacja | pobierasz aplikację ze strony Dockera | kilka komend w terminalu |
-| Zajmowane miejsce | większe (aplikacja + maszyna wirtualna) | mniejsze (sam silnik Dockera) |
-| Licencja | darmowy do użytku prywatnego | w pełni open source |
+| Best for | you prefer clicking and want to see containers in a window | you're fine typing a few commands |
+| Installation | download the app from Docker's website | a few terminal commands |
+| Disk space | larger (app + virtual machine) | smaller (just the Docker engine) |
+| Licence | free for personal use | fully open source |
 
-Od kroku 3 („Uruchom aplikację”) obie opcje działają tak samo, bo komendy `docker compose …` są identyczne.
+From step 3 ("Start the app") both options work the same way, because the `docker compose …` commands are identical.
 
 ---
 
-## 1A. Opcja A: zainstaluj Docker Desktop (jednorazowo)
+## 1A. Option A: install Docker Desktop (one time)
 
 **macOS**
-1. Pobierz Docker Desktop: https://www.docker.com/products/docker-desktop/. Wybierz wersję **Apple Silicon** (Mac z procesorem M1/M2/M3/M4) albo **Intel**. Którą masz, sprawdzisz w  → *Ten Mac*.
-2. Otwórz pobrany plik `.dmg` i przeciągnij Dockera do *Aplikacji*.
-3. Uruchom Docker Desktop i poczekaj, aż ikonka wieloryba na górnym pasku przestanie „pływać”.
+1. Download Docker Desktop: https://www.docker.com/products/docker-desktop/. Choose **Apple Silicon** (Macs with an M1/M2/M3/M4 chip) or **Intel**. You can check which one you have under  → *About This Mac*.
+2. Open the downloaded `.dmg` file and drag Docker into *Applications*.
+3. Launch Docker Desktop and wait until the whale icon in the menu bar stops animating.
 
 **Windows**
-1. Pobierz Docker Desktop z tej samej strony i uruchom instalator.
-2. Gdy instalator zapyta o **WSL 2**, zostaw zaznaczone. Po instalacji może być potrzebny restart komputera.
-3. Uruchom Docker Desktop i poczekaj, aż na dole okna pojawi się *Engine running*.
+1. Download Docker Desktop from the same page and run the installer.
+2. When the installer asks about **WSL 2**, leave it ticked. You may need to restart your computer afterwards.
+3. Launch Docker Desktop and wait until *Engine running* appears at the bottom of the window.
 
-> Docker potrzebuje kilku GB wolnego miejsca na dysku. Najlepiej mieć co najmniej 10 GB zapasu.
+> Docker needs several GB of free disk space. Ideally keep at least 10 GB free.
 
-Potem przejdź do kroku **2. Pobierz projekt**.
+Then continue with step **2. Get the project**.
 
-## 1B. Opcja B: Docker tylko z terminala (jednorazowo)
+## 1B. Option B: Docker from the terminal only (one time)
 
 ### macOS: Homebrew + Colima
 
-Colima to lekki, darmowy silnik Dockera dla Maca, bez aplikacji z okienkiem.
+Colima is a lightweight, free Docker engine for the Mac, without a windowed app.
 
-1. Otwórz **Terminal** (Cmd + Spacja, wpisz „Terminal”).
-2. Zainstaluj **Homebrew**, menedżer programów dla Maca. Jeśli już go masz, pomiń ten krok. Wklej:
+1. Open **Terminal** (Cmd + Space, type "Terminal").
+2. Install **Homebrew**, the package manager for macOS. Skip this if you already have it. Paste:
    ```
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
-   Instalator zapyta o hasło do Maca (podczas wpisywania nic się nie wyświetla, to normalne) i może doinstalować *Command Line Tools* od Apple. Na końcu pokaże komendy z sekcji **„Next steps”**. Skopiuj je i wykonaj, żeby terminal widział polecenie `brew`.
-3. Zainstaluj Dockera, Docker Compose i Colimę:
+   The installer asks for your Mac password (nothing appears while you type, that's normal) and may install Apple's *Command Line Tools*. At the end it prints commands under **"Next steps"**. Copy and run them so the terminal can find the `brew` command.
+3. Install Docker, Docker Compose and Colima:
    ```
    brew install docker docker-compose colima
    ```
-4. Powiedz Dockerowi, gdzie jest Compose (jednorazowo):
+4. Tell Docker where Compose lives (one time):
    ```
    mkdir -p ~/.docker && echo '{"cliPluginsExtraDirs": ["'"$(brew --prefix)"'/lib/docker/cli-plugins"]}' > ~/.docker/config.json
    ```
-5. Uruchom silnik Dockera:
+5. Start the Docker engine:
    ```
    colima start
    ```
-6. Sprawdź, czy działa: `docker compose version` powinno wypisać numer wersji.
+6. Check that it works: `docker compose version` should print a version number.
 
-> **Po każdym restarcie Maca** uruchom najpierw `colima start`. Zatrzymanie silnika i zwolnienie pamięci RAM: `colima stop`.
+> **After every Mac restart**, run `colima start` first. To stop the engine and free up memory: `colima stop`.
 
 ### Windows: WSL (Ubuntu) + Docker Engine
 
-Na Windowsie Docker działa wewnątrz **WSL**, czyli wbudowanego w Windows Linuksa. Wszystkie komendy wpisujesz potem w oknie **Ubuntu**.
+On Windows, Docker runs inside **WSL**, the Linux environment built into Windows. All later commands are typed in the **Ubuntu** window.
 
-1. Kliknij Start, wpisz `PowerShell`, kliknij prawym przyciskiem → **Uruchom jako administrator**.
-2. Zainstaluj WSL z Ubuntu:
+1. Click Start, type `PowerShell`, right-click it → **Run as administrator**.
+2. Install WSL with Ubuntu:
    ```
    wsl --install
    ```
-   Zrestartuj komputer, gdy Windows o to poprosi.
-3. Po restarcie otworzy się okno **Ubuntu** (albo uruchom je z menu Start). Ustaw nazwę użytkownika i hasło dla Linuksa; mogą być inne niż w Windowsie. Przy wpisywaniu hasła nic się nie wyświetla, to normalne.
-4. W oknie Ubuntu zainstaluj Dockera:
+   Restart your computer when Windows asks you to.
+3. After the restart an **Ubuntu** window opens (or launch it from the Start menu). Choose a Linux username and password; they can differ from your Windows ones. Nothing appears while you type the password, that's normal.
+4. In the Ubuntu window, install Docker:
    ```
    curl -fsSL https://get.docker.com | sudo sh
    sudo usermod -aG docker $USER
    ```
-5. Zamknij okno Ubuntu i otwórz je ponownie, żeby zmiany uprawnień zadziałały.
-6. Sprawdź, czy działa: `docker compose version` powinno wypisać numer wersji.
-   Jeśli pojawi się błąd *Cannot connect to the Docker daemon*, uruchom `sudo service docker start`.
+5. Close the Ubuntu window and open it again so the permission change takes effect.
+6. Check that it works: `docker compose version` should print a version number.
+   If you see *Cannot connect to the Docker daemon*, run `sudo service docker start`.
 
-> W opcji B na Windowsie **pobierz projekt i uruchamiaj komendy w oknie Ubuntu**, a nie w PowerShellu (patrz krok 2).
+> With option B on Windows, **get the project and run every command in the Ubuntu window**, not in PowerShell (see step 2).
 
-## 2. Pobierz projekt
+## 2. Get the project
 
-**Opcja A (Mac i Windows) oraz opcja B na Macu:** na stronie repozytorium na GitHubie kliknij zielony przycisk **Code → Download ZIP** i rozpakuj plik, np. do folderu `Dokumenty/PaintsLib`.
-
-**Opcja B na Windowsie (w oknie Ubuntu):**
+**With git** (recommended, makes updating easy):
 ```
 git clone https://github.com/QbaFi/PaintsLib.git
 cd PaintsLib
 ```
+On Windows with option B, run this in the Ubuntu window (git is already installed there). On a Mac, git comes with Apple's Command Line Tools: run `xcode-select --install` if the `git` command is missing.
 
-(Jeśli masz gita na Macu, możesz też użyć `git clone` zamiast ZIP-a.)
+**Without git:** on the repository page click the green **Code → Download ZIP** button and unzip the file, e.g. into `Documents/PaintsLib`.
 
-## 3. Uruchom aplikację
+## 3. Start the app
 
-Otwórz terminal **w folderze projektu**:
+Open a terminal **in the project folder**:
 
-- **macOS:** w Finderze kliknij folder prawym przyciskiem → *Usługi* → *Nowy terminal w folderze*. Możesz też otworzyć Terminal, wpisać `cd ` (ze spacją) i przeciągnąć folder do okna.
-- **Windows, opcja A:** otwórz folder w Eksploratorze, kliknij w pasek adresu, wpisz `powershell` i naciśnij Enter.
-- **Windows, opcja B:** jesteś już w folderze, jeśli wykonałeś `cd PaintsLib` w oknie Ubuntu.
+- **macOS:** in Finder, right-click the folder → *Services* → *New Terminal at Folder*. Or open Terminal, type `cd ` (with a space) and drag the folder into the window.
+- **Windows, option A:** open the folder in File Explorer, click the address bar, type `powershell` and press Enter.
+- **Windows, option B:** you're already in the folder if you ran `cd PaintsLib` in the Ubuntu window.
 
-Sprawdź, czy jesteś we właściwym miejscu: komenda `ls` powinna pokazać m.in. `docker-compose.yml`.
+Check you're in the right place: the `ls` command should list `docker-compose.yml`, among others.
 
-Wpisz:
+Run:
 
 ```
 docker compose up -d --build
 ```
 
-Pierwsze uruchomienie trwa kilka minut, bo Docker buduje obraz aplikacji. Kolejne starty są szybkie.
+The first start takes a few minutes while Docker builds the app image. Later starts are quick.
 
-Otwórz w przeglądarce: **http://localhost:8080**
+Open in your browser: **http://localhost:8080**
 
-Przy pierwszym starcie aplikacja sama pobiera katalog farb, co zajmuje kilkanaście sekund. Jeśli katalog jest pusty, odśwież stronę po chwili.
+On first start the app downloads the paint catalog by itself, which takes a few seconds. If the catalog is empty, refresh the page after a moment.
 
-## Codzienne użycie
+## Everyday use
 
-| Co chcesz zrobić | Komenda (w folderze projektu) |
+| What you want to do | Command (in the project folder) |
 |---|---|
-| Zatrzymać aplikację | `docker compose down` |
-| Uruchomić ponownie | `docker compose up -d` (opcja B na Macu: najpierw `colima start`) |
-| Zobaczyć logi (gdy coś nie działa) | `docker compose logs -f` (wyjście: Ctrl+C) |
-| Zaktualizować po zmianach w kodzie | pobierz nowy ZIP albo `git pull` (jeśli używasz gita), potem `docker compose up -d --build` |
+| Stop the app | `docker compose down` |
+| Start it again | `docker compose up -d` (option B on a Mac: run `colima start` first) |
+| See the logs (when something is wrong) | `docker compose logs -f` (exit with Ctrl+C) |
+| Update to the latest version | `git pull` (or download a new ZIP), then `docker compose up -d --build` |
 
-Twoje dane (kolekcja, ustawienia) są w wolumenie Dockera `paintslib-data`. **Nie znikają** po zatrzymaniu, aktualizacji ani przebudowie aplikacji. Usunąłby je dopiero `docker compose down -v`, więc **nie używaj `-v`**, chyba że chcesz zacząć od zera.
+`git pull` only updates the files; `docker compose up -d --build` is what rebuilds the app from them. Restarting the container in Docker Desktop does **not** pick up new code.
 
-### Kopia zapasowa
+Your data (collection, settings) lives in the Docker volume `paintslib-data`. It **survives** stopping, updating and rebuilding the app. Only `docker compose down -v` would delete it, so **don't use `-v`** unless you want to start from scratch.
+
+### Backup
 
 ```
 docker compose stop
@@ -144,7 +145,7 @@ docker compose cp app:/data/paintrack.db ./paintrack-backup.db
 docker compose start
 ```
 
-Przywracanie:
+Restore:
 
 ```
 docker compose stop
@@ -152,56 +153,58 @@ docker compose cp ./paintrack-backup.db app:/data/paintrack.db
 docker compose start
 ```
 
-Do szybkiej kopii samej kolekcji wystarczy też eksport CSV na stronie *Lista zakupów* albo adres `http://localhost:8080/api/inventory/export.csv`.
+For a quick copy of just your collection, open `http://localhost:8080/api/inventory/export.csv`.
 
-### Import kolekcji z arkusza
+### Importing your collection from a spreadsheet
 
-W aplikacji: *Ustawienia → Import kolekcji z arkusza (CSV)*.
+In the app: *Settings → Import your collection from a spreadsheet (CSV)*.
 
-1. Kliknij **Pobierz szablon CSV**, otwórz go w Google Sheets lub Excelu i wpisz swoje farby. Możesz też użyć własnego arkusza z kolumnami `Brand`, `Series`, `Colour`, `Conversion` (opcjonalnie `Quantity`, `Status`; nazwy kolumn mogą być też po polsku: `Marka`, `Seria`, `Kolor`, `Odpowiednik`, `Ilość`, `Stan`).
-2. W Google Sheets: *Plik → Pobierz → Wartości rozdzielone przecinkami (.csv)*.
-3. Wybierz plik w aplikacji. Najpierw zobaczysz **podgląd**: co zostało znalezione w katalogu, co dopasowano w przybliżeniu (np. literówka), a czego brakuje. Dopiero przycisk **Importuj** zapisuje zmiany.
+1. Click **Download CSV template**, open it in Google Sheets or Excel and fill in your paints. You can also use your own sheet with the columns `Brand`, `Series`, `Colour`, `Conversion` (optionally `Quantity`, `Status`; Polish column names work too: `Marka`, `Seria`, `Kolor`, `Odpowiednik`, `Ilość`, `Stan`).
+2. In Google Sheets: *File → Download → Comma-separated values (.csv)*.
+3. Choose the file in the app. You first get a **preview**: what was found in the catalog, what was matched approximately (e.g. a typo) and what's missing. Nothing is saved until you click **Import**.
 
-Kolumna `Conversion` to Twoje własne odpowiedniki; kilka oddziel znakiem `/`. Zapisują się jako **potwierdzone** i mają pierwszeństwo przed automatycznym dopasowaniem po kolorze. Ponowny import tego samego pliku niczego nie dubluje.
+The `Conversion` column holds your own equivalents; separate several with `/`. They're saved as **confirmed** and take priority over automatic colour matching. Importing the same file again doesn't create duplicates.
 
-> Po aktualizacji aplikacji kliknij w *Ustawieniach* **Importuj / aktualizuj katalog**, żeby dociągnąć nowe linie farb (np. Vallejo Model Color).
+> After updating the app, click **Import / update catalog** in *Settings* to pull in new paint ranges.
 
-### Ustawienia (opcjonalnie)
+### Configuration (optional)
 
-Skopiuj `.env.example` jako `.env` i zmień wartości, np. port albo import wszystkich marek (ok. 10 tys. farb). Potem uruchom `docker compose up -d`.
+Copy `.env.example` to `.env` and change the values, e.g. the port, or import every brand from the source (~10,000 paints). Then run `docker compose up -d`.
 
-Aplikacja domyślnie jest dostępna **tylko z tego komputera**. Żeby otworzyć ją np. z telefonu w tej samej sieci Wi-Fi, w `docker-compose.yml` zmień `"127.0.0.1:${PORT:-8080}:8000"` na `"${PORT:-8080}:8000"`. Nie ma logowania, więc rób to tylko w zaufanej sieci domowej.
+By default the app is reachable **from this computer only**. To open it from, say, your phone on the same Wi-Fi, change `"127.0.0.1:${PORT:-8080}:8000"` to `"${PORT:-8080}:8000"` in `docker-compose.yml`. There is no login, so only do this on a trusted home network.
 
 ---
 
-## Jak to działa (dla ciekawych)
+## How it works
 
 ```
 PaintsLib/
-├── Dockerfile            # buduje frontend (Node), potem obraz z Pythonem
-├── docker-compose.yml    # jeden serwis "app" + wolumen na bazę
+├── Dockerfile            # builds the frontend (Node), then the Python image
+├── docker-compose.yml    # a single "app" service + a volume for the database
 ├── backend/              # FastAPI + SQLAlchemy + SQLite
 │   ├── app/
-│   │   ├── main.py       # start aplikacji, serwowanie frontendu
-│   │   ├── routers/      # endpointy API (/api/paints, /api/inventory, /api/settings…)
-│   │   ├── color.py      # sRGB → Lab, odległość kolorów CIEDE2000
-│   │   ├── matching.py   # szukanie najbliższych farb
-│   │   ├── catalog.py    # które marki/linie importować i jak rozpoznać typ farby
-│   │   └── importer.py   # import katalogu z miniature-paints
-│   ├── alembic/          # migracje bazy danych
+│   │   ├── main.py               # app start-up, serves the frontend
+│   │   ├── routers/              # API endpoints (/api/paints, /api/inventory, /api/settings…)
+│   │   ├── color.py              # sRGB → Lab, CIEDE2000 colour difference
+│   │   ├── matching.py           # finding the closest paints
+│   │   ├── catalog.py            # which brands/ranges to import and how to tell paint types apart
+│   │   ├── importer.py           # catalog import from miniature-paints
+│   │   └── collection_import.py  # CSV collection import (matching rules)
+│   ├── alembic/          # database migrations
 │   └── tests/
 └── frontend/             # React + TypeScript + Vite + Tailwind
-    └── src/pages/        # ekrany: Kolekcja, Katalog, Po kolorze, Zakupy, Ustawienia
+    └── src/
+        ├── pages/        # screens: Collection, Catalog, By colour, Shopping, Settings
+        └── i18n.tsx      # English and Polish texts
 ```
 
-- **Dopasowanie kolorów:** kolory są zamieniane na przestrzeń CIE Lab i porównywane wzorem **CIEDE2000**, który lepiej oddaje ludzkie postrzeganie niż zwykła różnica RGB. ΔE < 2 to prawie identyczny kolor, 2–5 bliski, 5–10 podobny. Washe, contrasty i farby kryjące są porównywane tylko w swoich grupach.
-- **Dane o farbach** pochodzą z otwartego zbioru [Arcturus5404/miniature-paints](https://github.com/Arcturus5404/miniature-paints) (licencja MIT). Kolory są przybliżone, bo pochodzą ze zdjęć i próbek, a nie z pomiarów.
-- **Dokumentacja API** jest dostępna pod http://localhost:8080/docs po uruchomieniu aplikacji.
-- **Automatyczne testy** uruchamiają się na GitHubie przy każdej zmianie (zakładka *Actions*).
+- **Colour matching:** colours are converted to the CIE Lab colour space and compared with the **CIEDE2000** formula, which follows human perception much better than a plain RGB difference. ΔE below 2 is near identical, 2–5 close, 5–10 similar. Washes, contrast paints and opaque paints are only compared within their own group.
+- **API documentation** is available at http://localhost:8080/docs while the app is running.
+- **Automated tests** run on GitHub for every change (the *Actions* tab).
 
-### Praca nad kodem bez Dockera (opcjonalnie)
+### Working on the code without Docker (optional)
 
-Wymaga Pythona 3.12 i Node.js 22.
+Requires Python 3.12 and Node.js 22.
 
 ```
 # backend
@@ -213,8 +216,15 @@ alembic upgrade head
 uvicorn app.main:app --reload
 pytest
 
-# frontend (w drugim terminalu)
+# frontend (in a second terminal)
 cd frontend
 npm install
 npm run dev     # http://localhost:5173
 ```
+
+---
+
+## Credits and disclaimer
+
+- Paint data comes from [Arcturus5404/miniature-paints](https://github.com/Arcturus5404/miniature-paints) (MIT licence, © Rick Fleuren), downloaded when the app runs. The colour values are approximations taken from photos and swatches, not measurements.
+- PaintsLib is an independent fan project. It is not affiliated with, endorsed by or sponsored by Games Workshop, Acrylicos Vallejo, The Army Painter, AK Interactive or Green Stuff World. Citadel and all other brand and paint names are trademarks of their respective owners and are used only to identify the products.

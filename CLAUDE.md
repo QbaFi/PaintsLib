@@ -104,7 +104,7 @@ OpenAPI generowane automatycznie przez FastAPI (`/docs`).
 - Całość uruchamialna przez `docker compose up -d`; zero ręcznej konfiguracji poza `.env`.
 - Migracje Alembic uruchamiane automatycznie przy starcie `api`.
 - Seed katalogu: automatycznie przy pierwszym starcie lub ręcznie `docker compose run --rm app python -m app.importer` (pobiera dane z repo źródłowego albo z lokalnego katalogu `data/`).
-- README pisane dla początkującego: instalacja Docker Desktop na Windows i Mac, uruchomienie krok po kroku, zatrzymanie, aktualizacja, backup (kopiowanie pliku bazy).
+- README po angielsku (repo publiczne), pisane dla początkującego: instalacja Docker Desktop na Windows i Mac, uruchomienie krok po kroku, zatrzymanie, aktualizacja, backup (kopiowanie pliku bazy).
 - Testy: pytest dla backendu (zwłaszcza konwersji kolorów i ΔE — testy na znanych parach), Vitest dla frontendu.
 - Lint/format: ruff + black (Python), eslint + prettier (TS).
 - Bez `Makefile` (Windows go nie ma) — wszystkie komendy to zwykłe `docker compose …`, opisane w README.

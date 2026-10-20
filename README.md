@@ -228,3 +228,7 @@ npm run dev     # http://localhost:5173
 
 - Paint data comes from [Arcturus5404/miniature-paints](https://github.com/Arcturus5404/miniature-paints) (MIT licence, © Rick Fleuren), downloaded when the app runs. The colour values are approximations taken from photos and swatches, not measurements.
 - PaintsLib is an independent fan project. It is not affiliated with, endorsed by or sponsored by Games Workshop, Acrylicos Vallejo, The Army Painter, AK Interactive or Green Stuff World. Citadel and all other brand and paint names are trademarks of their respective owners and are used only to identify the products.
+
+## Licence
+
+PaintsLib's code is released under the [MIT Licence](LICENSE). The paint data is not part of this repository; it is downloaded from miniature-paints under its own MIT licence.

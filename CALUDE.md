@@ -45,15 +45,17 @@ Dwa mechanizmy, w tej kolejności priorytetu:
    - Opcja „najpierw z mojej kolekcji” — preferuj farby, które użytkownik już posiada.
 - Wyniki dopasowań można prekalkulować przy imporcie (tabela cache) — katalog ma kilka-kilkanaście tys. pozycji, więc liczenie on-the-fly też jest akceptowalne.
 
-## 4. Proponowany stos (do potwierdzenia)
+## 4. Stos (zdecydowany)
 
-- **Backend:** Python 3.12 + FastAPI, SQLAlchemy 2 + Alembic, Pydantic v2. Kolorymetria: `colormath` lub `coloraide` (ΔE00).
-- **Baza:** PostgreSQL 16 (wyszukiwanie: `pg_trgm` do fuzzy po nazwie).
-- **Frontend:** React + TypeScript + Vite, TanStack Query, Tailwind. Budowany w multi-stage Dockerfile i serwowany przez nginx.
-- **Reverse proxy:** nginx w kontenerze frontendu (`/api` → backend).
-- **Docker:** `docker compose` z serwisami `db`, `api`, `web`, `importer` (profil uruchamiany ręcznie). Wolumen na dane Postgresa, healthchecki, `.env` z przykładem `.env.example`. Obrazy multi-arch (amd64/arm64) — możliwość uruchomienia na Raspberry Pi / NAS.
+Właściciel uczy się na tym projekcie (pierwszy projekt) — priorytet: **prostota i jak najmniej ruchomych części**.
 
-Alternatywa prostsza: jeden kontener (FastAPI serwujący zbudowany frontend) + SQLite na wolumenie. Wybór do decyzji właściciela (patrz §9).
+- **Jeden kontener aplikacji:** FastAPI serwuje API pod `/api` oraz zbudowany frontend (pliki statyczne) pod `/`.
+- **Backend:** Python 3.12 + FastAPI, SQLAlchemy 2 + Alembic, Pydantic v2. ΔE00 liczone własną, wektorową implementacją w numpy (bez dodatkowych bibliotek kolorymetrycznych).
+- **Baza:** **SQLite** w pliku na wolumenie Dockera (`/data/paintrack.db`). Kod pisany przenośnie (SQLAlchemy), żeby w przyszłości dało się przejść na PostgreSQL bez przepisywania.
+- **Frontend:** React + TypeScript + Vite, TanStack Query, Tailwind. Budowany w multi-stage Dockerfile (etap Node) — użytkownik **nie** musi mieć Node ani Pythona na komputerze.
+- **Docker:** jeden `Dockerfile` + `docker-compose.yml` z jednym serwisem `app`, wolumenem na dane i healthcheckiem. Port domyślny `8080`.
+- **Import katalogu:** komenda w tym samym obrazie (`docker compose run --rm app python -m app.importer`); dodatkowo przycisk „Importuj/aktualizuj katalog” w ustawieniach aplikacji. Przy pierwszym starcie z pustą bazą import uruchamia się automatycznie.
+- **Platformy docelowe:** Windows (Docker Desktop + WSL2) i macOS (Docker Desktop, Intel i Apple Silicon). Obraz budowany lokalnie, więc działa na obu architekturach (amd64/arm64).
 
 ## 5. Model danych (szkic)
 
@@ -101,17 +103,18 @@ OpenAPI generowane automatycznie przez FastAPI (`/docs`).
 
 - Całość uruchamialna przez `docker compose up -d`; zero ręcznej konfiguracji poza `.env`.
 - Migracje Alembic uruchamiane automatycznie przy starcie `api`.
-- Seed katalogu: `docker compose run --rm importer` (pobiera dane z repo źródłowego przy buildzie obrazu albo z lokalnego katalogu `data/`).
+- Seed katalogu: automatycznie przy pierwszym starcie lub ręcznie `docker compose run --rm app python -m app.importer` (pobiera dane z repo źródłowego albo z lokalnego katalogu `data/`).
+- README pisane dla początkującego: instalacja Docker Desktop na Windows i Mac, uruchomienie krok po kroku, zatrzymanie, aktualizacja, backup (kopiowanie pliku bazy).
 - Testy: pytest dla backendu (zwłaszcza konwersji kolorów i ΔE — testy na znanych parach), Vitest dla frontendu.
 - Lint/format: ruff + black (Python), eslint + prettier (TS).
-- Prosty `Makefile` z celami: `up`, `down`, `logs`, `seed`, `test`, `backup`.
+- Bez `Makefile` (Windows go nie ma) — wszystkie komendy to zwykłe `docker compose …`, opisane w README.
 - Brak sekretów w repo; `.env.example` z domyślnymi wartościami.
 - Aplikacja w interfejsie po polsku (z możliwością dodania i18n później); nazwy farb zawsze w oryginale.
 
 ## 9. Otwarte decyzje (do ustalenia z właścicielem)
 
-- [ ] Stos: FastAPI + Postgres + React (domyślny) vs. prostszy jeden kontener + SQLite vs. inny język (np. Node/NestJS, .NET, Go)?
-- [ ] Gdzie będzie hostowane (PC, NAS, Raspberry Pi, VPS)? → wpływa na arch obrazów i bazę.
+- [x] Stos: jeden kontener (FastAPI + React) + SQLite — patrz §4.
+- [x] Hostowanie: lokalnie na Windows i macOS przez Docker Desktop.
 - [ ] Czy potrzebne logowanie (dostęp z internetu) czy tylko sieć lokalna?
 - [ ] Docelowe marki w MVP (sugestia: Citadel, Vallejo Game/Model Color, Army Painter, AK 3rd Gen, Two Thin Coats).
 - [ ] Czy pokazywać odpowiedniki tylko Citadel, czy dowolnie wybraną „markę referencyjną” w ustawieniach?

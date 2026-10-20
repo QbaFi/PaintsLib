@@ -8,11 +8,22 @@ Aplikacja do prowadzenia spisu farb modelarskich (Warhammer i inne miniaturki).
 - **szukanie po kolorze** (color picker), **lista zakupów** z eksportem do CSV
 - możliwość dodania własnej farby spoza katalogu
 
-Całość działa w Dockerze. Na komputerze nie musisz mieć Pythona, Node.js ani gita.
+Całość działa w Dockerze. Na komputerze nie musisz mieć Pythona ani Node.js.
+
+**Wybierz jeden z dwóch sposobów:**
+
+| | Opcja A: Docker Desktop | Opcja B: tylko terminal |
+|---|---|---|
+| Dla kogo | wolisz klikać, chcesz widzieć kontenery w okienku | nie boisz się wpisać kilku komend |
+| Instalacja | pobierasz aplikację ze strony Dockera | kilka komend w terminalu |
+| Zajmowane miejsce | większe (aplikacja + maszyna wirtualna) | mniejsze (sam silnik Dockera) |
+| Licencja | darmowy do użytku prywatnego | w pełni open source |
+
+Od kroku 3 („Uruchom aplikację”) obie opcje działają tak samo, bo komendy `docker compose …` są identyczne.
 
 ---
 
-## 1. Zainstaluj Docker Desktop (jednorazowo)
+## 1A. Opcja A: zainstaluj Docker Desktop (jednorazowo)
 
 **macOS**
 1. Pobierz Docker Desktop: https://www.docker.com/products/docker-desktop/. Wybierz wersję **Apple Silicon** (Mac z procesorem M1/M2/M3/M4) albo **Intel**. Którą masz, sprawdzisz w  → *Ten Mac*.
@@ -26,18 +37,79 @@ Całość działa w Dockerze. Na komputerze nie musisz mieć Pythona, Node.js an
 
 > Docker potrzebuje kilku GB wolnego miejsca na dysku. Najlepiej mieć co najmniej 10 GB zapasu.
 
+Potem przejdź do kroku **2. Pobierz projekt**.
+
+## 1B. Opcja B: Docker tylko z terminala (jednorazowo)
+
+### macOS: Homebrew + Colima
+
+Colima to lekki, darmowy silnik Dockera dla Maca, bez aplikacji z okienkiem.
+
+1. Otwórz **Terminal** (Cmd + Spacja, wpisz „Terminal”).
+2. Zainstaluj **Homebrew**, menedżer programów dla Maca. Jeśli już go masz, pomiń ten krok. Wklej:
+   ```
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+   Instalator zapyta o hasło do Maca (podczas wpisywania nic się nie wyświetla, to normalne) i może doinstalować *Command Line Tools* od Apple. Na końcu pokaże komendy z sekcji **„Next steps”**. Skopiuj je i wykonaj, żeby terminal widział polecenie `brew`.
+3. Zainstaluj Dockera, Docker Compose i Colimę:
+   ```
+   brew install docker docker-compose colima
+   ```
+4. Powiedz Dockerowi, gdzie jest Compose (jednorazowo):
+   ```
+   mkdir -p ~/.docker && echo '{"cliPluginsExtraDirs": ["'"$(brew --prefix)"'/lib/docker/cli-plugins"]}' > ~/.docker/config.json
+   ```
+5. Uruchom silnik Dockera:
+   ```
+   colima start
+   ```
+6. Sprawdź, czy działa: `docker compose version` powinno wypisać numer wersji.
+
+> **Po każdym restarcie Maca** uruchom najpierw `colima start`. Zatrzymanie silnika i zwolnienie pamięci RAM: `colima stop`.
+
+### Windows: WSL (Ubuntu) + Docker Engine
+
+Na Windowsie Docker działa wewnątrz **WSL**, czyli wbudowanego w Windows Linuksa. Wszystkie komendy wpisujesz potem w oknie **Ubuntu**.
+
+1. Kliknij Start, wpisz `PowerShell`, kliknij prawym przyciskiem → **Uruchom jako administrator**.
+2. Zainstaluj WSL z Ubuntu:
+   ```
+   wsl --install
+   ```
+   Zrestartuj komputer, gdy Windows o to poprosi.
+3. Po restarcie otworzy się okno **Ubuntu** (albo uruchom je z menu Start). Ustaw nazwę użytkownika i hasło dla Linuksa; mogą być inne niż w Windowsie. Przy wpisywaniu hasła nic się nie wyświetla, to normalne.
+4. W oknie Ubuntu zainstaluj Dockera:
+   ```
+   curl -fsSL https://get.docker.com | sudo sh
+   sudo usermod -aG docker $USER
+   ```
+5. Zamknij okno Ubuntu i otwórz je ponownie, żeby zmiany uprawnień zadziałały.
+6. Sprawdź, czy działa: `docker compose version` powinno wypisać numer wersji.
+   Jeśli pojawi się błąd *Cannot connect to the Docker daemon*, uruchom `sudo service docker start`.
+
+> W opcji B na Windowsie **pobierz projekt i uruchamiaj komendy w oknie Ubuntu**, a nie w PowerShellu (patrz krok 2).
+
 ## 2. Pobierz projekt
 
-Na stronie repozytorium na GitHubie kliknij zielony przycisk **Code → Download ZIP** i rozpakuj plik, np. do folderu `Dokumenty/PaintsLib`.
+**Opcja A (Mac i Windows) oraz opcja B na Macu:** na stronie repozytorium na GitHubie kliknij zielony przycisk **Code → Download ZIP** i rozpakuj plik, np. do folderu `Dokumenty/PaintsLib`.
 
-(Jeśli masz gita: `git clone https://github.com/QbaFi/PaintsLib.git`.)
+**Opcja B na Windowsie (w oknie Ubuntu):**
+```
+git clone https://github.com/QbaFi/PaintsLib.git
+cd PaintsLib
+```
+
+(Jeśli masz gita na Macu, możesz też użyć `git clone` zamiast ZIP-a.)
 
 ## 3. Uruchom aplikację
 
 Otwórz terminal **w folderze projektu**:
 
 - **macOS:** w Finderze kliknij folder prawym przyciskiem → *Usługi* → *Nowy terminal w folderze*. Możesz też otworzyć Terminal, wpisać `cd ` (ze spacją) i przeciągnąć folder do okna.
-- **Windows:** otwórz folder w Eksploratorze, kliknij w pasek adresu, wpisz `powershell` i naciśnij Enter.
+- **Windows, opcja A:** otwórz folder w Eksploratorze, kliknij w pasek adresu, wpisz `powershell` i naciśnij Enter.
+- **Windows, opcja B:** jesteś już w folderze, jeśli wykonałeś `cd PaintsLib` w oknie Ubuntu.
+
+Sprawdź, czy jesteś we właściwym miejscu: komenda `ls` powinna pokazać m.in. `docker-compose.yml`.
 
 Wpisz:
 
@@ -56,9 +128,9 @@ Przy pierwszym starcie aplikacja sama pobiera katalog farb, co zajmuje kilkanaś
 | Co chcesz zrobić | Komenda (w folderze projektu) |
 |---|---|
 | Zatrzymać aplikację | `docker compose down` |
-| Uruchomić ponownie | `docker compose up -d` |
+| Uruchomić ponownie | `docker compose up -d` (opcja B na Macu: najpierw `colima start`) |
 | Zobaczyć logi (gdy coś nie działa) | `docker compose logs -f` (wyjście: Ctrl+C) |
-| Zaktualizować po zmianach w kodzie | pobierz nowy ZIP, potem `docker compose up -d --build` |
+| Zaktualizować po zmianach w kodzie | pobierz nowy ZIP albo `git pull` (jeśli używasz gita), potem `docker compose up -d --build` |
 
 Twoje dane (kolekcja, ustawienia) są w wolumenie Dockera `paintslib-data`. **Nie znikają** po zatrzymaniu, aktualizacji ani przebudowie aplikacji. Usunąłby je dopiero `docker compose down -v`, więc **nie używaj `-v`**, chyba że chcesz zacząć od zera.
 

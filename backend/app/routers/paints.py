@@ -184,7 +184,7 @@ def update_paint(paint_id: int, data: PaintUpdate, session: Session = Depends(ge
     return paint_out(paint)
 
 
-@router.delete("/paints/{paint_id}", status_code=204)
+@router.delete("/paints/{paint_id}", status_code=204, response_model=None)
 def delete_paint(paint_id: int, session: Session = Depends(get_session)) -> None:
     paint = get_paint(session, paint_id)
     if not paint.custom:
@@ -231,7 +231,7 @@ def add_curated_equivalent(
     return {"ok": True}
 
 
-@router.delete("/paints/{paint_id}/equivalents/{other_id}", status_code=204)
+@router.delete("/paints/{paint_id}/equivalents/{other_id}", status_code=204, response_model=None)
 def remove_curated_equivalent(paint_id: int, other_id: int, session: Session = Depends(get_session)) -> None:
     for key in ((paint_id, other_id), (other_id, paint_id)):
         row = session.get(PaintEquivalent, key)

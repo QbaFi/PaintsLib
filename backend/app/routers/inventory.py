@@ -146,7 +146,7 @@ def update_inventory(item_id: int, data: InventoryUpdate, session: Session = Dep
     return _item_out(session, item, None)
 
 
-@router.delete("/{item_id}", status_code=204)
+@router.delete("/{item_id}", status_code=204, response_model=None)
 def delete_inventory(item_id: int, session: Session = Depends(get_session)) -> None:
     item = session.get(InventoryItem, item_id)
     if item is None:

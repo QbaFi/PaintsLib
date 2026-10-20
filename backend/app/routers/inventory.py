@@ -97,7 +97,10 @@ def export_inventory(
     for i in _filtered(session, status, None, None, None, None, "brand"):
         p = i.paint
         writer.writerow(
-            [p.brand.name, p.range_name, p.name, p.code or "", p.hex, p.type, i.quantity, i.status, i.tags, i.note or ""]
+            [
+                p.brand.name, p.range_name, p.name, p.code or "", p.hex, p.type,
+                i.quantity, i.status, i.tags, i.note or "",
+            ]
         )
     buf.seek(0)
     return StreamingResponse(

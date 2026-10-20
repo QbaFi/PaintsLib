@@ -109,7 +109,7 @@ OpenAPI generowane automatycznie przez FastAPI (`/docs`).
 - Lint/format: ruff + black (Python), eslint + prettier (TS).
 - Bez `Makefile` (Windows go nie ma) — wszystkie komendy to zwykłe `docker compose …`, opisane w README.
 - Brak sekretów w repo; `.env.example` z domyślnymi wartościami.
-- Interfejs dwujęzyczny PL/EN (`frontend/src/i18n.tsx`, każdy nowy tekst dodawać w obu językach); nazwy farb zawsze w oryginale.
+- Nagłówki stron i logo w czcionce Pirata One (Google Fonts, OFL), reszta w Inter. Interfejs dwujęzyczny PL/EN (`frontend/src/i18n.tsx`, każdy nowy tekst dodawać w obu językach); nazwy farb zawsze w oryginale.
 
 ## 9. Otwarte decyzje (do ustalenia z właścicielem)
 

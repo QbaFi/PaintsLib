@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Cinzel"', "serif"],
+        display: ['"Pirata One"', "serif"],
         sans: ['"Inter"', "system-ui", "sans-serif"],
       },
       colors: {

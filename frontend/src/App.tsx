@@ -22,7 +22,7 @@ export function App() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3">
           <NavLink to="/" className="flex items-center gap-2">
             <img src="/favicon.svg" alt="" className="h-7 w-7" />
-            <span className="font-display text-xl tracking-wider text-brass-300">PaintsLib</span>
+            <span className="font-display text-2xl tracking-wide text-brass-300">PaintsLib</span>
           </NavLink>
           <nav className="flex flex-wrap gap-1">
             {NAV.map((item) => (

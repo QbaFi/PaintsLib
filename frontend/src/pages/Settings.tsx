@@ -29,7 +29,7 @@ export function SettingsPage() {
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-xl border border-ink-700 bg-ink-900 p-5">
-      <h2 className="mb-4 font-display text-lg text-brass-300">{title}</h2>
+      <h2 className="mb-4 text-base font-semibold uppercase tracking-widest text-brass-300">{title}</h2>
       {children}
     </section>
   );

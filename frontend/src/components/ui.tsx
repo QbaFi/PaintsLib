@@ -108,7 +108,7 @@ export function PageHeader({ title, subtitle, children }: { title: string; subti
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="font-display text-2xl tracking-wide text-brass-300 sm:text-3xl">{title}</h1>
+        <h1 className="font-display text-3xl tracking-wide text-brass-300 sm:text-4xl">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-ink-400">{subtitle}</p>}
       </div>
       {children}

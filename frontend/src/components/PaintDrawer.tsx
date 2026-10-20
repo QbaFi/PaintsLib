@@ -68,7 +68,7 @@ function PaintDrawer({ paintId, onClose }: { paintId: number; onClose: () => voi
             <div className="flex items-center gap-5">
               <Swatch hex={paint.data.hex} size={96} />
               <div className="min-w-0">
-                <h2 className="font-display text-xl text-brass-300">{paint.data.name}</h2>
+                <h2 className="text-xl font-semibold text-brass-300">{paint.data.name}</h2>
                 <p className="text-sm text-ink-400">
                   {paint.data.brand.name}
                   {paint.data.range_name && ` · ${paint.data.range_name}`}
